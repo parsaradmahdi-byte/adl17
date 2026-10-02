@@ -395,7 +395,7 @@ public class MainActivity extends Activity {
         }
         void drawPhoneStatus(Canvas c,String title,boolean lock){
             text(c,title,780,255,22,Color.WHITE,true,Layout.Alignment.ALIGN_OPPOSITE,250);
-            text(c,lock?"۱۴:۳۲":"۴G   ۸۷٪",270,255,22,0xffd8e1e7,true,Layout.Alignment.ALIGN_LEFT,250);
+            text(c,lock?"۱۴:۳۲":"۴G   ۸۷٪",270,255,22,0xffd8e1e7,true,Layout.Alignment.ALIGN_NORMAL,250);
             p.setColor(0x332f8ab8); c.drawRect(170,290,910,294,p);
         }
         void drawPhoneHome(Canvas c){
@@ -523,35 +523,32 @@ public class MainActivity extends Activity {
             final int[] sy={10,5,15,10,10,220,215,215,220,435,430,425,430,430,710,700,705,700,895,895,895,890};
             for(int i=0;i<22;i++){
                 receiptOnBoard[i]=false; receiptLocked[i]=false; receiptRot[i]=0;
+                receiptPieceX[i]=540; receiptPieceY[i]=650;
                 receiptTargetX[i]=55 + sx[i]*0.63f + receiptPieces[i].getWidth()*0.63f/2f;
                 receiptTargetY[i]=210 + sy[i]*0.63f + receiptPieces[i].getHeight()*0.63f/2f;
                 trayOrder[i]=i;
             }
             java.util.Random rnd=new java.util.Random(1404);
             for(int i=21;i>0;i--){int j=rnd.nextInt(i+1);int t=trayOrder[i];trayOrder[i]=trayOrder[j];trayOrder[j]=t;}
+
             selectedReceiptPiece=-1; receiptSolved=false;
+        }
+        void checkReceiptPiece(int i){
+            if(i<0 || i>=22 || receiptLocked[i] || !receiptOnBoard[i]) return;
+            float dx=Math.abs(receiptPieceX[i]-receiptTargetX[i]);
+            float dy=Math.abs(receiptPieceY[i]-receiptTargetY[i]);
+            int r=((receiptRot[i]%360)+360)%360;
+            if(dx<=38f && dy<=38f && r==0){
+                receiptPieceX[i]=receiptTargetX[i];
+                receiptPieceY[i]=receiptTargetY[i];
+                receiptRot[i]=0;
+                receiptLocked[i]=true;
+            }
+            receiptSolved=allReceiptLocked();
         }
 
         void drawArrowButton(Canvas c,float x,float y,String s){round(c,x-65,y-55,x+65,y+55,25,0xff263b46);text(c,s,x,y+16,34,Color.WHITE,true,Layout.Alignment.ALIGN_CENTER,110);}
 
-        void drawReceiptPiece(Canvas c,int i,float cx,float cy,float maxSize,float rot){
-            Bitmap b=receiptPieces[i]; if(b==null)return;
-            float ratio=Math.min(maxSize/b.getWidth(),maxSize/b.getHeight());
-            float w=b.getWidth()*ratio,h=b.getHeight()*ratio;
-            c.save(); c.rotate(rot,cx,cy); c.drawBitmap(b,null,new RectF(cx-w/2,cy-h/2,cx+w/2,cy+h/2),p); c.restore();
-        }
-
-        void initReceiptPuzzle(){
-            for(int i=0;i<22;i++){
-                receiptOnBoard[i]=false; receiptLocked[i]=false; receiptRot[i]=0;
-                int col=i%6,row=i/6;
-                receiptPieceX[i]=145+col*165; receiptPieceY[i]=1450+row*155;
-                int tc=i<20?i:i-20;
-                receiptTargetX[i]=120+(tc%5)*190; receiptTargetY[i]=310+(tc/5)*170;
-                if(i>=20){receiptTargetX[i]=310+(i-20)*190;receiptTargetY[i]=990;}
-            }
-            selectedReceiptPiece=-1; receiptSolved=false;
-        }
 
         void drawCase(Canvas c) {
             int step=Math.min(storyStep,3);
