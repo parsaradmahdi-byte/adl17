@@ -537,7 +537,7 @@ public class MainActivity extends Activity {
             if(i<0 || i>=22 || receiptLocked[i] || !receiptOnBoard[i]) return;
             float dx=Math.abs(receiptPieceX[i]-receiptTargetX[i]);
             float dy=Math.abs(receiptPieceY[i]-receiptTargetY[i]);
-            int r=((receiptRot[i]%360)+360)%360;
+            int r=(int)(((receiptRot[i]%360)+360)%360);
             if(dx<=38f && dy<=38f && r==0){
                 receiptPieceX[i]=receiptTargetX[i];
                 receiptPieceY[i]=receiptTargetY[i];
